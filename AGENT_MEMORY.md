@@ -7,15 +7,22 @@
 
 ## 1. What This Project Is
 
-A **full-screen door-mounted dashboard** for a Berlin apartment — designed to be mounted on a screen by the front door. It shows:
-- A **clock** (many clock styles — see §5)
-- **Live U-Bahn / S-Bahn / Tram / Bus departures** from the nearest stop
+**VESTL is a physical product** — a Raspberry Pi + screen unit mounted at the entrance of a home or apartment. Residents glance at it before leaving: next transit departures, weather, time. No phone. No unlock. Just information at the door.
+
+This repository is the **display software** that runs on the VESTL device (Chromium kiosk, full-screen, no interaction required).
+
+**Target hardware:** Raspberry Pi 3B+ or newer, any HDMI screen (7" touch panel → full portrait monitor).  
+**Product vision:** Sold as a design object with planned artist collab editions and clothing brand drops. Utility + collectible.
+
+The software shows:
+- A **clock** (30+ styles — see §5)
+- **Live U-Bahn / S-Bahn / Tram / Bus departures** from the nearest stop (auto-detected by GPS coords)
 - **Live weather** (temperature, condition)
-- A **Berlin-themed background** with SVG landmark illustrations
+- **Berlin-themed SVG backgrounds** — landmark illustrations per theme
 
 Stack: **Vite 5 + React 18 + TypeScript 5 + Tailwind CSS 3**  
 Dev server: `npm run dev` → http://localhost:5173/  
-No backend. All data is fetched client-side from public APIs.
+No backend. No API keys. All data fetched client-side from public APIs.
 
 ---
 
