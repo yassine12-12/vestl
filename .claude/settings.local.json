@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(curl -s \"https://v5.bvg.transport.rest/stops/nearby?latitude=52.5219&longitude=13.4132&results=3\")",
+      "Bash(curl -s \"https://v6.bvg.transport.rest/locations/nearby?latitude=52.5219&longitude=13.4132&results=10&distance=1000\")",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('C:/Temp/stops.json','utf8'\\); const stops=JSON.parse\\(d\\).filter\\(s=>s.type==='stop'\\); stops.forEach\\(s=>console.log\\(s.id, s.name, JSON.stringify\\(Object.entries\\(s.products||{}\\).filter\\(\\([k,v]\\)=>v\\).map\\(\\([k]\\)=>k\\)\\)\\)\\)\")"
+    ]
+  }
+}

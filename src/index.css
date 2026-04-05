@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black text-white antialiased;
+    font-size: 10px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+}
+
+@layer utilities {
+  .glass-premium {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  /* Skeleton loading — subtle, no movement */
+  .shimmer {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+  }
+
+  /* Single entrance fade — used once on mount, not repeated */
+  .fade-in {
+    animation: fadeIn 0.4s ease forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Slide-in panel */
+  .panel-slide-in {
+    animation: panelSlideIn 0.25s ease forwards;
+  }
+  @keyframes panelSlideIn {
+    from { transform: translateX(24px); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+  }
+}
