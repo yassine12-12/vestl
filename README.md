@@ -12,7 +12,20 @@ This repository contains the **display software** that runs on the VESTL device.
 
 VESTL is designed to run on a **Raspberry Pi** (3B+ or newer) connected to any HDMI screen — from a small 7" touch panel to a full portrait monitor. The software boots into a full-screen Chromium kiosk displaying this dashboard. No keyboard, no mouse, no interaction needed.
 
-**Planned collab editions** — artist series, clothing brand drops, limited hardware finishes. VESTL is both a utility object and a design object.
+### Housing
+
+The enclosure is a core part of the product — not an afterthought. Every edition of VESTL has a housing designed to match its identity:
+
+| Edition | Housing | Finish |
+|---------|---------|--------|
+| **Prototype** | 3D printed (FDM/resin) | Matte black, minimal |
+| **Standard** | 3D printed, refined geometry | Painted / powder coated |
+| **Collab Edition** | CNC machined aluminium or bespoke material | Anodised, brushed, raw — edition-specific |
+| **Artist Drop** | Designed per collaboration | Material and finish defined by the artist |
+
+The prototype housing is intentionally simple — clean rectangular form, flush-mounted screen, minimal bezel. The object is designed to look like it belongs on a wall, not like a DIY project.
+
+**Planned collab editions** — artist series, clothing brand drops, limited CNC housing finishes. VESTL is both a utility object and a collectible design object.
 
 ## ✨ Software Features
 

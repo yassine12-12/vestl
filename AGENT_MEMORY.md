@@ -14,6 +14,14 @@ This repository is the **display software** that runs on the VESTL device (Chrom
 **Target hardware:** Raspberry Pi 3B+ or newer, any HDMI screen (7" touch panel → full portrait monitor).  
 **Product vision:** Sold as a design object with planned artist collab editions and clothing brand drops. Utility + collectible.
 
+**Housing / enclosure:**
+- Prototype → 3D printed (FDM/resin), simple minimal rectangular form, matte black
+- Standard edition → refined 3D printed geometry, painted or powder coated
+- Collab / premium editions → CNC machined aluminium or bespoke material, anodised/brushed finish
+- Artist drops → housing material and finish defined per collaboration
+- Design principle: must look like it belongs on a wall, not like a DIY build
+- The software UI (dark, cinematic, full-bleed) is designed to complement a premium physical object — keep this in mind when making visual changes
+
 The software shows:
 - A **clock** (30+ styles — see §5)
 - **Live U-Bahn / S-Bahn / Tram / Bus departures** from the nearest stop (auto-detected by GPS coords)
