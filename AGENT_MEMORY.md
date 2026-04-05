@@ -11,8 +11,14 @@
 
 This repository is the **display software** that runs on the VESTL device (Chromium kiosk, full-screen, no interaction required).
 
-**Target hardware:** Raspberry Pi 3B+ or newer, any HDMI screen (7" touch panel → full portrait monitor).  
+**Target hardware:** Raspberry Pi 3B+ or newer + **3:1 ultra-wide screen** (wide, low-profile, door-frame format).  
+**Screen ratio:** 3:1 is a deliberate product decision — wide enough for multiple transit lines side by side, narrow enough to mount flush like a shelf or picture frame above/beside a door.  
 **Product vision:** Sold as a design object with planned artist collab editions and clothing brand drops. Utility + collectible.
+
+**Priority hierarchy — always respect this when making UI decisions:**
+1. **Transit departures** — the entire reason the product exists. Must be dominant, readable from 2m, always visible.
+2. **Weather** — secondary. Supportive glance info. Never let it crowd the departures.
+3. **Clock / time** — tertiary. Ambient. Should not compete for attention with departures.
 
 **Housing / enclosure:**
 - Prototype → 3D printed (FDM/resin), simple minimal rectangular form, matte black

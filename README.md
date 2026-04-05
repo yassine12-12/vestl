@@ -2,7 +2,7 @@
 
 **Know before you go.**
 
-VESTL is a physical product — a Raspberry Pi + screen unit designed to be mounted at the entrance of any home or apartment. At a glance, residents get everything they need before stepping outside: next departures for every nearby transit line, current weather, and the time. No phone needed. No unlocking. Just look up.
+VESTL is a physical product — a Raspberry Pi + screen unit designed to be mounted at the entrance of any home or apartment. Its primary purpose is one thing: **showing you when the next bus, tram, U-Bahn or S-Bahn leaves from your nearest stop.** No pulling out your phone. No unlocking. You walk past it and you know.
 
 This repository contains the **display software** that runs on the VESTL device.
 
@@ -10,7 +10,9 @@ This repository contains the **display software** that runs on the VESTL device.
 
 ## The Hardware
 
-VESTL is designed to run on a **Raspberry Pi** (3B+ or newer) connected to any HDMI screen — from a small 7" touch panel to a full portrait monitor. The software boots into a full-screen Chromium kiosk displaying this dashboard. No keyboard, no mouse, no interaction needed.
+VESTL runs on a **Raspberry Pi** (3B+ or newer) connected to a **3:1 ultra-wide screen** — a wide, low-profile display format that fits naturally above or beside a door frame without dominating the wall. The software boots into a full-screen Chromium kiosk. No keyboard, no mouse, no interaction needed.
+
+The **3:1 aspect ratio** is a deliberate product decision: the display is purpose-shaped for a door context. It is wide enough to show multiple transit lines side by side, and narrow enough to sit flush against a wall like a shelf or a picture frame.
 
 ### Housing
 
@@ -29,12 +31,15 @@ The prototype housing is intentionally simple — clean rectangular form, flush-
 
 ## ✨ Software Features
 
-- 🚇 **Live Transit Departures** — next U-Bahn / S-Bahn / Tram / Bus from the nearest stop, auto-detected by GPS coordinates
-- 🌡️ **Live Weather** — temperature and conditions via Open-Meteo (no API key required)
-- 🕐 **Premium Clock Faces** — 30+ styles from Bauhaus to Tourbillon to Neon Plasma
-- 🎨 **Berlin Themes** — full-screen SVG landmark illustrations (U-Bahn platform, Fernsehturm, Berliner Dom, Berghain, East Side Gallery and more)
-- 🔄 **Auto-refresh** — updates every 60 seconds, no interaction needed
-- ⚡ **No backend, no API keys** — works out of the box, fully client-side
+**Core — transit is everything:**
+- 🚇 **Live Transit Departures** — next U-Bahn / S-Bahn / Tram / Bus from the nearest stop, auto-detected by GPS. This is the product. Everything else supports it.
+- 🔄 **Auto-refresh** — updates every 60 seconds, fully passive, no interaction ever needed
+- ⚡ **No backend, no API keys** — works out of the box, all data from public open APIs
+
+**Supporting context:**
+- 🌡️ **Weather** — temperature and condition at a glance (secondary, complements the transit info)
+- 🕐 **Clock** — time display with 30+ styles from Bauhaus to Tourbillon (tertiary, ambient)
+- 🎨 **Berlin Themes** — full-screen SVG landmark illustrations as backgrounds (U-Bahn platform, Fernsehturm, Berliner Dom, Berghain, East Side Gallery and more)
 
 ## 🚀 Quick Start
 
