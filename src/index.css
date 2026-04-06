@@ -13,6 +13,7 @@
 }
 
 @layer utilities {
+  /* ── Glass surface ───────────────────────────────── */
   .glass-premium {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(40px) saturate(150%);
@@ -20,13 +21,24 @@
     border: 1px solid rgba(255, 255, 255, 0.07);
   }
 
-  /* Skeleton loading — subtle, no movement */
+  /* ── Loading skeleton ─────────────────────────────── */
   .shimmer {
-    background: rgba(255, 255, 255, 0.04);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0%,
+      rgba(255, 255, 255, 0.07) 50%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmerSlide 1.8s ease-in-out infinite;
     border-radius: 4px;
   }
+  @keyframes shimmerSlide {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 
-  /* Single entrance fade — used once on mount, not repeated */
+  /* ── Entrance fade ────────────────────────────────── */
   .fade-in {
     animation: fadeIn 0.4s ease forwards;
   }
@@ -35,12 +47,33 @@
     to   { opacity: 1; }
   }
 
-  /* Slide-in panel */
+  /* ── Slide-in panel ───────────────────────────────── */
   .panel-slide-in {
-    animation: panelSlideIn 0.25s ease forwards;
+    animation: panelSlideIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   @keyframes panelSlideIn {
     from { transform: translateX(24px); opacity: 0; }
     to   { transform: translateX(0);    opacity: 1; }
+  }
+
+  /* ── Live pulse — "now" departure time ───────────── */
+  .live-pulse {
+    animation: livePulse 2.4s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.55; }
+  }
+
+  /* ── Subtle film grain overlay (opt-in) ──────────── */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+    z-index: 9999;
   }
 }

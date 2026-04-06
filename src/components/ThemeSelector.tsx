@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { themes, Theme } from '../themes';
 import { berlinThemes } from '../themes/berlinThemes';
+import { vestlThemes } from '../themes/vestlThemes';
 import { ThemeCustomization } from '../types';
 import { UserConfig } from '../userConfig';
 import { ClockPreview } from './ClockPreview';
@@ -64,6 +65,7 @@ function parseAddress(displayName: string): { short: string; sub: string } {
 // ─── THEME TAB ──────────────────────────────────────────────────────────────
 
 const BERLIN_IDS = berlinThemes.map(t => t.id);
+const VESTL_IDS  = vestlThemes.map(t => t.id);
 
 const ThemeRow: React.FC<{ theme: Theme; active: boolean; onClick: () => void }> = ({ theme, active, onClick }) => (
   <button
@@ -93,40 +95,31 @@ const ThemeRow: React.FC<{ theme: Theme; active: boolean; onClick: () => void }>
 );
 
 const ThemeTab: React.FC<{ currentTheme: Theme; onThemeChange: (t: Theme) => void }> = ({ currentTheme, onThemeChange }) => {
+  const vestlList  = vestlThemes as Theme[];
   const berlinList = berlinThemes as Theme[];
-  const otherList  = themes.filter(t => !BERLIN_IDS.includes(t.id));
+  const otherList  = themes.filter(t => !BERLIN_IDS.includes(t.id) && !VESTL_IDS.includes(t.id));
+
+  const Section = ({ label, list }: { label: string; list: Theme[] }) => (
+    <div className="mb-5">
+      <div className="flex items-center gap-2 mb-2">
+        <p className="text-xs font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          {label}
+        </p>
+        <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+      </div>
+      <div className="space-y-0.5">
+        {list.map(theme => (
+          <ThemeRow key={theme.id} theme={theme} active={theme.id === currentTheme.id} onClick={() => onThemeChange(theme)} />
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div>
-      {/* Berlin — always visible at top */}
-      <div className="mb-5">
-        <div className="flex items-center gap-2 mb-2">
-          <p className="text-xs font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            Berlin
-          </p>
-          <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
-        </div>
-        <div className="space-y-0.5">
-          {berlinList.map(theme => (
-            <ThemeRow key={theme.id} theme={theme} active={theme.id === currentTheme.id} onClick={() => onThemeChange(theme)} />
-          ))}
-        </div>
-      </div>
-
-      {/* Everything else */}
-      <div>
-        <div className="flex items-center gap-2 mb-2">
-          <p className="text-xs font-semibold tracking-wider" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            More
-          </p>
-          <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
-        </div>
-        <div className="space-y-0.5">
-          {otherList.map(theme => (
-            <ThemeRow key={theme.id} theme={theme} active={theme.id === currentTheme.id} onClick={() => onThemeChange(theme)} />
-          ))}
-        </div>
-      </div>
+      <Section label="VESTL" list={vestlList} />
+      <Section label="Berlin" list={berlinList} />
+      <Section label="More" list={otherList} />
     </div>
   );
 };
@@ -161,6 +154,15 @@ const CLOCK_GROUPS = [
 ];
 
 const LAYOUTS = [
+  { value: 'sbahn', label: 'S-Bahn Berlin' },
+  { value: 'nova', label: 'Nova' },
+  { value: 'paper', label: 'Paper' },
+  { value: 'metro', label: 'Metro' },
+  { value: 'bvg', label: 'BVG Amber' },
+  { value: 'bvg-green', label: 'BVG Green' },
+  { value: 'bvg-large', label: 'BVG Large' },
+  { value: 'bvg-clean', label: 'BVG Clean' },
+  { value: 'signal', label: 'Signal' },
   { value: 'default', label: 'Default' },
   { value: 'split', label: 'Split' },
   { value: 'centered', label: 'Centered' },

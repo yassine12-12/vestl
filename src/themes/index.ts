@@ -1,4 +1,5 @@
 import { Theme } from './types';
+import { vestlThemes } from './vestlThemes';
 import { defaultThemes } from './defaultThemes';
 import { berlinThemes } from './berlinThemes';
 import { animeThemes } from './animeThemes';
@@ -8,8 +9,9 @@ import { transitThemes } from './transitThemes';
 import { modernMinimalThemes } from './modernMinimalThemes';
 import { vibrantGradientThemes } from './vibrantGradientThemes';
 
-// Combine all theme arrays — Berlin themes first
+// VESTL native themes first, then everything else
 export const themes: Theme[] = [
+  ...vestlThemes,
   ...berlinThemes,
   ...defaultThemes,
   ...transitThemes,

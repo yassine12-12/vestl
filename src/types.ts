@@ -67,7 +67,7 @@ export interface ThemeCustomization {
   showWeather: boolean;
   showDepartures: boolean;
   showDate: boolean;
-  layout: 'default' | 'centered' | 'compact' | 'split' | 'minimal';
+  layout: 'default' | 'centered' | 'compact' | 'split' | 'minimal' | 'wide' | 'signal' | 'bvg' | 'bvg-green' | 'bvg-large' | 'bvg-clean' | 'nova' | 'paper' | 'metro' | 'sbahn';
   clockColor?: string;
   accentColor?: string;
   showSeconds: boolean;
@@ -80,7 +80,7 @@ export const DEFAULT_CUSTOMIZATION: ThemeCustomization = {
   showWeather: true,
   showDepartures: true,
   showDate: true,
-  layout: 'default',
-  showSeconds: true,
-  showComplications: true,
+  layout: 'signal',
+  showSeconds: false,
+  showComplications: false,
 };

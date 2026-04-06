@@ -1,6 +1,7 @@
 import React from 'react';
 import { DataState, WeatherData } from '../types';
 import { Theme } from '../themes';
+import { WeatherIcon } from './WeatherIcon';
 
 interface TemperatureCardProps {
   weatherState: DataState<WeatherData>;
@@ -10,70 +11,54 @@ interface TemperatureCardProps {
 export const TemperatureCard: React.FC<TemperatureCardProps> = ({ weatherState, theme }) => {
   const { data, status } = weatherState;
 
-  const getWeatherIcon = (iconCode: string) => {
-    return `https://openweathermap.org/img/wn/${iconCode}@4x.png`;
-  };
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center space-x-2">
+        <div className="shimmer w-10 h-10 rounded-full" />
+        <div className="shimmer w-20 h-6 rounded" />
+      </div>
+    );
+  }
 
-  return (
-    <div className="mb-4 slide-in">
-      {status === 'loading' && (
-        <div className="flex items-center space-x-2">
-          <div className="shimmer w-10 h-10 rounded-full"></div>
-          <div className="shimmer w-20 h-6 rounded"></div>
-        </div>
-      )}
+  if (status === 'error') {
+    return (
+      <div className="text-[10px]" style={{ color: theme.textSecondary }}>
+        Weather unavailable
+      </div>
+    );
+  }
 
-      {status === 'error' && (
-        <div 
-          className="text-[10px]"
-          style={{ color: theme.textSecondary }}
-        >
-          Weather unavailable
-        </div>
-      )}
+  if (status === 'success' && data) {
+    const temp = Math.round(data.main.temp);
+    const feels = Math.round(data.main.feels_like);
+    const desc = data.weather[0]?.description ?? '';
+    const code = data.weather[0]?.id ?? 0;
 
-      {status === 'success' && data && (
-        <div className="flex items-center space-x-2">
-          {data.weather[0] && (
-            <img 
-              src={getWeatherIcon(data.weather[0].icon)} 
-              alt={data.weather[0].description}
-              className="w-12 h-12 opacity-80"
-            />
-          )}
-          <div>
-            <div className="flex items-baseline space-x-2">
-              <span 
-                className="text-3xl font-extralight leading-none" 
-                style={{ fontWeight: 200, color: theme.textColor }}
-              >
-                {Math.round(data.main.temp)}°
-              </span>
-              <span 
-                className="text-[11px] font-light capitalize"
-                style={{ color: theme.textSecondary }}
-              >
-                {data.weather[0]?.description || 'Clear'}
-              </span>
-            </div>
-            <div 
-              className="text-[9px] mt-1"
-              style={{ color: theme.textSecondary }}
+    return (
+      <div className="mb-4 flex items-center space-x-3">
+        <WeatherIcon code={code} color={theme.textColor} size={44} />
+        <div>
+          <div className="flex items-baseline space-x-2">
+            <span
+              className="text-3xl leading-none"
+              style={{ fontWeight: 200, color: theme.textColor, letterSpacing: '-0.04em' }}
             >
-              H:{Math.round(data.main.temp_max)}° · L:{Math.round(data.main.temp_min)}°
-            </div>
+              {temp}°
+            </span>
+            <span
+              className="text-[11px] font-light capitalize"
+              style={{ color: theme.textSecondary, opacity: 0.55 }}
+            >
+              {desc}
+            </span>
+          </div>
+          <div className="text-[9px] mt-1" style={{ color: theme.textSecondary, opacity: 0.35 }}>
+            feels {feels}° · {data.main.humidity}% hum
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {status === 'idle' && (
-        <div 
-          className="text-[10px]"
-          style={{ color: theme.textSecondary }}
-        >
-          Loading...
-        </div>
-      )}
-    </div>
-  );
+  return null;
 };

@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Layout } from './components/Layout';
 import { DeparturesCard } from './components/DeparturesCard';
+import { VestlBoard } from './components/VestlBoard';
+import { SignalLayout } from './components/SignalLayout';
+import { BvgLayout } from './components/BvgLayout';
+import { NovaLayout } from './components/NovaLayout';
+import { PaperLayout } from './components/PaperLayout';
+import { MetroLayout } from './components/MetroLayout';
+import { SbahnLayout } from './components/SbahnLayout';
 import { ThemeSelector } from './components/ThemeSelector';
 import { useWeather } from './hooks/useWeather';
 import { useDepartures } from './hooks/useDepartures';
@@ -41,10 +48,71 @@ function App() {
     setUserConfig(cfg);
   }, []);
 
+  if (customization.layout === 'bvg' || customization.layout === 'bvg-green' || customization.layout === 'bvg-large' || customization.layout === 'bvg-clean') {
+    const variantMap: Record<string, 'amber' | 'green' | 'large' | 'clean'> = {
+      'bvg': 'amber', 'bvg-green': 'green', 'bvg-large': 'large', 'bvg-clean': 'clean',
+    };
+    return (
+      <>
+        <BvgLayout
+          theme={currentTheme}
+          weatherState={weatherState}
+          departuresState={departuresState}
+          hiddenModes={userConfig.hiddenModes}
+          variant={variantMap[customization.layout]}
+        />
+        <ThemeSelector
+          currentTheme={currentTheme}
+          onThemeChange={setCurrentTheme}
+          customization={customization}
+          onCustomizationChange={setCustomization}
+          userConfig={userConfig}
+          onSaveConfig={handleSaveConfig}
+        />
+      </>
+    );
+  }
+
+  if (customization.layout === 'sbahn') {
+    return (<><SbahnLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
+  }
+  if (customization.layout === 'nova') {
+    return (<><NovaLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
+  }
+  if (customization.layout === 'paper') {
+    return (<><PaperLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
+  }
+  if (customization.layout === 'metro') {
+    return (<><MetroLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
+  }
+  if (customization.layout === 'signal') {
+    return (
+      <>
+        <SignalLayout
+          theme={currentTheme}
+          weatherState={weatherState}
+          departuresState={departuresState}
+          hiddenModes={userConfig.hiddenModes}
+        />
+        <ThemeSelector
+          currentTheme={currentTheme}
+          onThemeChange={setCurrentTheme}
+          customization={customization}
+          onCustomizationChange={setCustomization}
+          userConfig={userConfig}
+          onSaveConfig={handleSaveConfig}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <Layout theme={currentTheme} weatherState={weatherState} customization={customization}>
-        <DeparturesCard departuresState={departuresState} theme={currentTheme} hiddenModes={userConfig.hiddenModes} />
+        {customization.layout === 'wide'
+          ? <VestlBoard departuresState={departuresState} theme={currentTheme} hiddenModes={userConfig.hiddenModes} />
+          : <DeparturesCard departuresState={departuresState} theme={currentTheme} hiddenModes={userConfig.hiddenModes} />
+        }
       </Layout>
       <ThemeSelector
         currentTheme={currentTheme}

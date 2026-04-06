@@ -102,6 +102,8 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
   ];
 
   const layouts = [
+    { value: 'bvg', label: 'BVG Board', desc: 'Real amber LED departure board' },
+    { value: 'signal', label: 'Signal', desc: 'Full-screen transit board' },
     { value: 'default', label: 'Default', desc: 'Time left, content right' },
     { value: 'split', label: 'Split View', desc: 'Transit dashboard style' },
     { value: 'centered', label: 'Centered', desc: 'Everything centered' },
