@@ -8,10 +8,12 @@ import { luxuryThemes } from './luxuryThemes';
 import { transitThemes } from './transitThemes';
 import { modernMinimalThemes } from './modernMinimalThemes';
 import { vibrantGradientThemes } from './vibrantGradientThemes';
+import { officialTransitThemes } from './officialTransitThemes';
 
 // VESTL native themes first, then everything else
 export const themes: Theme[] = [
   ...vestlThemes,
+  ...officialTransitThemes,
   ...berlinThemes,
   ...defaultThemes,
   ...transitThemes,
@@ -29,6 +31,7 @@ export const getTheme = (themeId: string): Theme => {
 
 // Re-export individual theme arrays for categorization if needed
 export {
+  officialTransitThemes,
   berlinThemes,
   defaultThemes,
   transitThemes,
