@@ -112,7 +112,7 @@ export const SettingsModal: React.FC<Props> = ({ isOpen, onClose, theme, userCon
   };
 
   const handleSave = () => {
-    onSave({ address: query, lat, lon, hiddenModes });
+    onSave({ address: query, lat, lon, hiddenModes, hiddenLines: userConfig.hiddenLines ?? [], radius: userConfig.radius ?? 1000 });
     onClose();
   };
 

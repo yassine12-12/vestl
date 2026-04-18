@@ -1,33 +1,80 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Layout } from './components/Layout';
-import { DeparturesCard } from './components/DeparturesCard';
-import { VestlBoard } from './components/VestlBoard';
-import { SignalLayout } from './components/SignalLayout';
-import { BvgLayout } from './components/BvgLayout';
-import { NovaLayout } from './components/NovaLayout';
-import { PaperLayout } from './components/PaperLayout';
-import { MetroLayout } from './components/MetroLayout';
-import { SbahnLayout } from './components/SbahnLayout';
+import { BvgLayout, BvgVariant, VariantCfg } from './components/BvgLayout';
 import { ThemeSelector } from './components/ThemeSelector';
 import { useWeather } from './hooks/useWeather';
 import { useDepartures } from './hooks/useDepartures';
-import { themes, Theme, getTheme } from './themes';
+import { themes, Theme, getTheme } from './themes/index';
 import { ThemeCustomization, DEFAULT_CUSTOMIZATION } from './types';
 import { UserConfig, getUserConfig, saveUserConfig } from './userConfig';
 import { config as defaultConfig } from './config';
 
+// ─── Color helpers ─────────────────────────────────────────────────────────────
+
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function dimColor(color: string, alpha: number): string {
+  if (/^#[0-9a-f]{6}/i.test(color)) return hexToRgba(color, alpha);
+  if (color.startsWith('rgba(')) return color.replace(/,\s*[\d.]+\)$/, `,${alpha})`);
+  if (color.startsWith('rgb(')) return color.replace('rgb(', 'rgba(').replace(')', `,${alpha})`);
+  return color;
+}
+
+const GLOW_IDS = new Set(['terminal-green', 'matrix', 'dark-neon', 'tron', 'cyberpunk', 'berlin-night']);
+
+function themeToVariantCfg(theme: Theme): VariantCfg {
+  const color = theme.timeColor;
+  const font = theme.fontFamily ?? '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif';
+  const isMonospace = /mono|courier|consolas/i.test(font);
+  const hasGlow = theme.style === 'retro' || GLOW_IDS.has(theme.id);
+  const glow = hasGlow
+    ? `0 0 8px ${dimColor(color, 0.65)}, 0 0 2px ${dimColor(color, 0.9)}`
+    : null;
+
+  return {
+    bg: theme.background,
+    color,
+    colorDim: theme.textSecondary ?? dimColor(color, 0.45),
+    colorFaint: dimColor(color, 0.22),
+    divider: dimColor(color, 0.12),
+    glow,
+    font,
+    rowSize: 'clamp(2.6rem, 6.5vh, 5.8rem)',
+    nextSize: 'clamp(1.5rem, 3.6vh, 3.2rem)',
+    headerSize: 'clamp(2rem, 4.5vh, 3.8rem)',
+    rowPadding: '1rem 2.4rem',
+    maxRows: 8,
+    showStrip: false,
+    lineColRatio: isMonospace ? 2.0 : 2.6,
+    urgentColor: theme.accentColor !== color ? theme.accentColor : undefined,
+  };
+}
+
+// ─── Board variant map ─────────────────────────────────────────────────────────
+
+const BOARD_VARIANT_MAP: Record<string, BvgVariant> = {
+  'bvg': 'amber', 'bvg-green': 'green', 'bvg-large': 'large', 'bvg-clean': 'clean',
+  'sbahn': 'sbahn', 'nova': 'nova', 'paper': 'paper', 'metro': 'metro', 'signal': 'signal',
+  'bvg-icons': 'icons', 'bvg-yellow': 'yellow', 'bvg-day': 'day', 'bvg-paper-icons': 'paper-icons',
+};
+
 function App() {
   const [userConfig, setUserConfig] = useState<UserConfig>(() => {
     const saved = getUserConfig();
-    return saved ?? { address: defaultConfig.MY_ADDRESS, lat: defaultConfig.MY_LAT, lon: defaultConfig.MY_LON, hiddenModes: [] };
+    return saved ?? { address: defaultConfig.MY_ADDRESS, lat: defaultConfig.MY_LAT, lon: defaultConfig.MY_LON, hiddenModes: [], hiddenLines: [], radius: 1000 };
   });
 
   const weatherState = useWeather(userConfig.lat, userConfig.lon);
-  const departuresState = useDepartures(userConfig.lat, userConfig.lon);
+  const departuresState = useDepartures(userConfig.lat, userConfig.lon, userConfig.radius ?? 1000);
 
   const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('dashboardTheme');
-    return saved ? getTheme(saved) : themes[0];
+    return saved ? (themes.find(t => t.id === saved) ?? getTheme(saved)) : themes[0];
   });
 
   const [customization, setCustomization] = useState<ThemeCustomization>(() => {
@@ -48,72 +95,21 @@ function App() {
     setUserConfig(cfg);
   }, []);
 
-  if (customization.layout === 'bvg' || customization.layout === 'bvg-green' || customization.layout === 'bvg-large' || customization.layout === 'bvg-clean') {
-    const variantMap: Record<string, 'amber' | 'green' | 'large' | 'clean'> = {
-      'bvg': 'amber', 'bvg-green': 'green', 'bvg-large': 'large', 'bvg-clean': 'clean',
-    };
-    return (
-      <>
-        <BvgLayout
-          theme={currentTheme}
-          weatherState={weatherState}
-          departuresState={departuresState}
-          hiddenModes={userConfig.hiddenModes}
-          variant={variantMap[customization.layout]}
-        />
-        <ThemeSelector
-          currentTheme={currentTheme}
-          onThemeChange={setCurrentTheme}
-          customization={customization}
-          onCustomizationChange={setCustomization}
-          userConfig={userConfig}
-          onSaveConfig={handleSaveConfig}
-        />
-      </>
-    );
-  }
-
-  if (customization.layout === 'sbahn') {
-    return (<><SbahnLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
-  }
-  if (customization.layout === 'nova') {
-    return (<><NovaLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
-  }
-  if (customization.layout === 'paper') {
-    return (<><PaperLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
-  }
-  if (customization.layout === 'metro') {
-    return (<><MetroLayout theme={currentTheme} weatherState={weatherState} departuresState={departuresState} hiddenModes={userConfig.hiddenModes} /><ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} customization={customization} onCustomizationChange={setCustomization} userConfig={userConfig} onSaveConfig={handleSaveConfig} /></>);
-  }
-  if (customization.layout === 'signal') {
-    return (
-      <>
-        <SignalLayout
-          theme={currentTheme}
-          weatherState={weatherState}
-          departuresState={departuresState}
-          hiddenModes={userConfig.hiddenModes}
-        />
-        <ThemeSelector
-          currentTheme={currentTheme}
-          onThemeChange={setCurrentTheme}
-          customization={customization}
-          onCustomizationChange={setCustomization}
-          userConfig={userConfig}
-          onSaveConfig={handleSaveConfig}
-        />
-      </>
-    );
-  }
+  const boardVariant = BOARD_VARIANT_MAP[customization.layout];
+  const customCfg = boardVariant ? undefined : themeToVariantCfg(currentTheme);
 
   return (
     <>
-      <Layout theme={currentTheme} weatherState={weatherState} customization={customization}>
-        {customization.layout === 'wide'
-          ? <VestlBoard departuresState={departuresState} theme={currentTheme} hiddenModes={userConfig.hiddenModes} />
-          : <DeparturesCard departuresState={departuresState} theme={currentTheme} hiddenModes={userConfig.hiddenModes} />
-        }
-      </Layout>
+      <BvgLayout
+        theme={currentTheme}
+        weatherState={weatherState}
+        departuresState={departuresState}
+        hiddenModes={userConfig.hiddenModes}
+        hiddenLines={userConfig.hiddenLines ?? []}
+        variant={boardVariant ?? 'amber'}
+        customCfg={customCfg}
+        address={userConfig.address}
+      />
       <ThemeSelector
         currentTheme={currentTheme}
         onThemeChange={setCurrentTheme}
@@ -121,6 +117,7 @@ function App() {
         onCustomizationChange={setCustomization}
         userConfig={userConfig}
         onSaveConfig={handleSaveConfig}
+        departuresState={departuresState}
       />
     </>
   );

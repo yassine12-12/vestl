@@ -93,6 +93,7 @@ const DepRow: React.FC<DepRowProps> = ({ dep, theme, isLast }) => {
 
   return (
     <div
+      className="dep-row-in"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -275,9 +276,10 @@ export const DeparturesCard: React.FC<DeparturesCardProps> = ({
   }
 
   const groups = buildGroups(data.departures, hiddenModes);
+  const refreshKey = data.departures[0]?.when ?? 'empty';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+    <div key={refreshKey} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
       {groups.map(group => (
         <div key={group.mode}>
           {/* Group header */}

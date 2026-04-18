@@ -37,7 +37,7 @@ function buildGroups(deps:Departure[],hidden:string[]): GRow[] {
   groups.forEach(g=>{const t=new Date(g.whens[0]).getTime();if(!earliest.has(g.lineName)||t<earliest.get(g.lineName)!)earliest.set(g.lineName,t);});
   groups.sort((a,b)=>{const la=earliest.get(a.lineName)!,lb=earliest.get(b.lineName)!;return la!==lb?la-lb:new Date(a.whens[0]).getTime()-new Date(b.whens[0]).getTime();});
   const cnt=new Map<string,number>();const out:GRow[]=[];
-  for(const g of groups){const c=cnt.get(g.lineName)??0;if(c>=2)continue;cnt.set(g.lineName,c+1);out.push(g);if(out.length===6)break;}
+  for(const g of groups){const c=cnt.get(g.lineName)??0;if(c>=2)continue;cnt.set(g.lineName,c+1);out.push(g);if(out.length===8)break;}
   return out;
 }
 
@@ -53,6 +53,12 @@ export const MetroLayout: React.FC<Props> = ({ weatherState, departuresState, hi
   const weather=weatherState.status==='success'?weatherState.data:null;
   const stopName=(departuresState.data?.departures??[]).find(d=>!hiddenModes.includes(d.line.mode))?.stop?.name??'';
   const isLoading=departuresState.status==='idle'||departuresState.status==='loading';
+
+  const numRows=Math.max(1,groups.length);
+  const headerVh=14;
+  const rowHVh=(100-headerVh)/numRows;
+  const rowFontVh=rowHVh*0.82;
+  const nextFontVh=rowFontVh*0.52;
 
   const timeStr=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',hour12:false});
   const dateStr=now.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
@@ -73,11 +79,11 @@ export const MetroLayout: React.FC<Props> = ({ weatherState, departuresState, hi
       }}>
         <div>
           <div style={{
-            fontSize:'clamp(2.2rem,5.5vh,4.5rem)',fontWeight:100,
+            fontSize:'8vh',fontWeight:100,
             color:'rgba(255,255,255,0.95)',letterSpacing:'-0.05em',lineHeight:0.95,
             fontVariantNumeric:'tabular-nums',
           }}>{timeStr}</div>
-          <div style={{fontSize:'clamp(0.6rem,1.2vh,0.85rem)',fontWeight:600,letterSpacing:'0.2em',color:'rgba(255,255,255,0.22)',marginTop:'0.35rem'}}>
+          <div style={{fontSize:'3.5vh',fontWeight:600,letterSpacing:'0.2em',color:'rgba(255,255,255,0.22)',marginTop:'0.35rem'}}>
             {dateStr}
           </div>
         </div>
@@ -89,14 +95,14 @@ export const MetroLayout: React.FC<Props> = ({ weatherState, departuresState, hi
             background:'rgba(255,255,255,0.06)',borderRadius:12,
             padding:'0.5rem 1rem',border:'1px solid rgba(255,255,255,0.08)',
           }}>
-            <span style={{fontSize:'clamp(1.2rem,3vh,2.4rem)',fontWeight:200,color:'rgba(255,255,255,0.9)',letterSpacing:'-0.03em',lineHeight:1}}>
+            <span style={{fontSize:'6vh',fontWeight:200,color:'rgba(255,255,255,0.9)',letterSpacing:'-0.03em',lineHeight:1}}>
               {Math.round(weather.main.temp)}°
             </span>
             <div>
-              <div style={{fontSize:'clamp(0.6rem,1.1vh,0.8rem)',color:'rgba(255,255,255,0.4)',letterSpacing:'0.05em',textTransform:'capitalize'}}>
+              <div style={{fontSize:'4vh',color:'rgba(255,255,255,0.4)',letterSpacing:'0.05em',textTransform:'capitalize'}}>
                 {weather.weather[0]?.description}
               </div>
-              <div style={{fontSize:'clamp(0.55rem,1vh,0.72rem)',color:'rgba(255,255,255,0.22)',marginTop:'0.1rem'}}>
+              <div style={{fontSize:'3vh',color:'rgba(255,255,255,0.22)',marginTop:'0.1rem'}}>
                 feels {Math.round(weather.main.feels_like)}°
               </div>
             </div>
@@ -124,19 +130,19 @@ export const MetroLayout: React.FC<Props> = ({ weatherState, departuresState, hi
 
           return (
             <div key={g.key} style={{
-              flex:1, display:'flex', alignItems:'stretch',
+              height:`${rowHVh - 1}vh`, display:'flex', alignItems:'stretch',
               background:'rgba(255,255,255,0.04)',
               border:'1px solid rgba(255,255,255,0.07)',
-              borderRadius:10, overflow:'hidden', minHeight:0,
+              borderRadius:10, overflow:'hidden', flexShrink:0,
             }}>
               {/* Color strip + line badge */}
               <div style={{
-                width:'5.5rem',flexShrink:0,
+                width:`${rowFontVh * 3.5}vh`,flexShrink:0,
                 background:col.bg,
                 display:'flex',alignItems:'center',justifyContent:'center',
               }}>
                 <span style={{
-                  fontSize:'clamp(1.1rem,2.8vh,2.2rem)',fontWeight:900,
+                  fontSize:`${rowFontVh}vh`,fontWeight:900,
                   color:col.fg,letterSpacing:'0.02em',
                 }}>{g.lineName}</span>
               </div>
@@ -144,7 +150,7 @@ export const MetroLayout: React.FC<Props> = ({ weatherState, departuresState, hi
               {/* Content */}
               <div style={{flex:1,display:'flex',alignItems:'center',padding:'0 1.8rem',gap:'1rem',minWidth:0}}>
                 <span style={{
-                  flex:1,fontSize:'clamp(1rem,2.6vh,2.1rem)',fontWeight:300,
+                  flex:1,fontSize:`${rowFontVh}vh`,fontWeight:300,
                   color:'rgba(255,255,255,0.88)',overflow:'hidden',
                   textOverflow:'ellipsis',whiteSpace:'nowrap',
                   letterSpacing:'-0.01em',lineHeight:1,
@@ -154,16 +160,16 @@ export const MetroLayout: React.FC<Props> = ({ weatherState, departuresState, hi
                 <div style={{flexShrink:0,display:'flex',alignItems:'baseline',gap:'1rem'}}>
                   <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end'}}>
                     <span style={{
-                      fontSize:mins===0?'clamp(1.1rem,2.8vh,2.2rem)':'clamp(1.5rem,4vh,3.2rem)',
+                      fontSize:`${rowFontVh}vh`,
                       fontWeight:urgent?700:200,
                       color:countColor,letterSpacing:'-0.04em',lineHeight:1,
                       transition:'color 0.4s',
                     }} className={urgent?'live-pulse':undefined}>{fmt(g.whens[0])}</span>
-                    {mins>0&&<span style={{fontSize:'0.5rem',fontWeight:700,color:countColor,opacity:0.5,letterSpacing:'0.2em'}}>MIN</span>}
+                    {mins>0&&<span style={{fontSize:`${nextFontVh * 0.6}vh`,fontWeight:700,color:countColor,opacity:0.5,letterSpacing:'0.2em'}}>MIN</span>}
                   </div>
                   {g.whens.slice(1).map((w,j)=>(
                     <span key={j} style={{
-                      fontSize:'clamp(0.8rem,1.8vh,1.4rem)',fontWeight:300,
+                      fontSize:`${nextFontVh}vh`,fontWeight:300,
                       color:'rgba(255,255,255,0.22)',letterSpacing:'-0.02em',lineHeight:1,
                     }}>{fmt(w)}</span>
                   ))}

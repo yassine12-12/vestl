@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-size: 16px;
+  }
   body {
     @apply bg-black text-white antialiased;
-    font-size: 10px;
     overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
   }
@@ -45,6 +47,20 @@
   @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
+  }
+
+  /* ── Theme background crossfade — slower, only the bg layer ─── */
+  .theme-bg-fade {
+    animation: fadeIn 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* ── Departure row slide-in on data refresh ───────── */
+  .dep-row-in {
+    animation: depRowIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes depRowIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ── Slide-in panel ───────────────────────────────── */

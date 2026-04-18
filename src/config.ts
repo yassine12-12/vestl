@@ -5,8 +5,8 @@ export const config = {
   // Your address for display
   MY_ADDRESS: 'Alexanderplatz, Berlin 10178',
   
-  // Your location coordinates (for weather only)
-  MY_LAT: 52.5219, // Alexanderplatz, Berlin
+  // Your location coordinates
+  MY_LAT: 52.5219,
   MY_LON: 13.4132,
   
   // Transport lines available in your area (customize these!)

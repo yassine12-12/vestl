@@ -37,7 +37,7 @@ function buildGroups(deps:Departure[],hidden:string[]): GRow[] {
   groups.forEach(g=>{const t=new Date(g.whens[0]).getTime();if(!earliest.has(g.lineName)||t<earliest.get(g.lineName)!)earliest.set(g.lineName,t);});
   groups.sort((a,b)=>{const la=earliest.get(a.lineName)!,lb=earliest.get(b.lineName)!;return la!==lb?la-lb:new Date(a.whens[0]).getTime()-new Date(b.whens[0]).getTime();});
   const cnt=new Map<string,number>();const out:GRow[]=[];
-  for(const g of groups){const c=cnt.get(g.lineName)??0;if(c>=2)continue;cnt.set(g.lineName,c+1);out.push(g);if(out.length===7)break;}
+  for(const g of groups){const c=cnt.get(g.lineName)??0;if(c>=2)continue;cnt.set(g.lineName,c+1);out.push(g);if(out.length===8)break;}
   return out;
 }
 
@@ -53,6 +53,12 @@ export const PaperLayout: React.FC<Props> = ({ weatherState, departuresState, hi
   const weather=weatherState.status==='success'?weatherState.data:null;
   const stopName=(departuresState.data?.departures??[]).find(d=>!hiddenModes.includes(d.line.mode))?.stop?.name??'';
   const isLoading=departuresState.status==='idle'||departuresState.status==='loading';
+
+  const numRows=Math.max(1,groups.length);
+  const headerVh=18;
+  const rowHVh=(100-headerVh)/numRows;
+  const rowFontVh=rowHVh*0.82;
+  const nextFontVh=rowFontVh*0.52;
 
   const timeStr=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',hour12:false});
   const dateStr=now.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
@@ -79,20 +85,20 @@ export const PaperLayout: React.FC<Props> = ({ weatherState, departuresState, hi
         display:'flex', alignItems:'flex-end', justifyContent:'space-between',
       }}>
         <div>
-          <div style={{fontSize:'clamp(3rem,7vh,6rem)',fontWeight:700,letterSpacing:'-0.05em',lineHeight:0.9,color:INK,fontVariantNumeric:'tabular-nums'}}>
+          <div style={{fontSize:'8vh',fontWeight:700,letterSpacing:'-0.05em',lineHeight:0.9,color:INK,fontVariantNumeric:'tabular-nums'}}>
             {timeStr}
           </div>
-          <div style={{fontSize:'clamp(0.65rem,1.4vh,1rem)',fontWeight:600,letterSpacing:'0.18em',color:INK3,marginTop:'0.5rem'}}>
+          <div style={{fontSize:'3.5vh',fontWeight:600,letterSpacing:'0.18em',color:INK3,marginTop:'0.5rem'}}>
             {dateStr}
           </div>
         </div>
 
         <div style={{textAlign:'right'}}>
           {weather && <>
-            <div style={{fontSize:'clamp(1.4rem,3.5vh,2.8rem)',fontWeight:300,color:INK,letterSpacing:'-0.03em',lineHeight:1}}>
+            <div style={{fontSize:'6vh',fontWeight:300,color:INK,letterSpacing:'-0.03em',lineHeight:1}}>
               {Math.round(weather.main.temp)}°C
             </div>
-            <div style={{fontSize:'clamp(0.6rem,1.2vh,0.85rem)',color:INK3,marginTop:'0.25rem',letterSpacing:'0.06em',textTransform:'capitalize'}}>
+            <div style={{fontSize:'4vh',color:INK3,marginTop:'0.25rem',letterSpacing:'0.06em',textTransform:'capitalize'}}>
               {weather.weather[0]?.description}  ·  feels {Math.round(weather.main.feels_like)}°
             </div>
           </>}
@@ -133,18 +139,18 @@ export const PaperLayout: React.FC<Props> = ({ weatherState, departuresState, hi
 
           return (
             <div key={g.key} style={{
-              flex:1, display:'grid', gridTemplateColumns:'7rem 1fr 12rem',
+              height:`${rowHVh}vh`, display:'grid', gridTemplateColumns:'7rem 1fr 12rem',
               alignItems:'center', padding:'0 3rem',
               borderBottom:isLast?'none':`1px solid ${RULE}`,
               background:i%2===1?'rgba(0,0,0,0.022)':'transparent',
-              minHeight:0,
+              overflow:'hidden',
             }}>
               {/* Line badge */}
               <div>
                 <span style={{
                   display:'inline-flex',alignItems:'center',justifyContent:'center',
                   background:col.bg,color:col.fg,
-                  fontSize:'clamp(0.7rem,1.6vh,1.1rem)',fontWeight:800,
+                  fontSize:`${rowFontVh * 0.7}vh`,fontWeight:800,
                   padding:'0.15rem 0.55rem',borderRadius:4,
                   letterSpacing:'0.03em',
                 }}>{g.lineName}</span>
@@ -152,7 +158,7 @@ export const PaperLayout: React.FC<Props> = ({ weatherState, departuresState, hi
 
               {/* Direction */}
               <span style={{
-                fontSize:'clamp(0.9rem,2.2vh,1.8rem)',fontWeight:400,color:INK,
+                fontSize:`${rowFontVh}vh`,fontWeight:400,color:INK,
                 overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',
                 paddingRight:'2rem',lineHeight:1,
               }}>{g.direction}</span>
@@ -160,11 +166,11 @@ export const PaperLayout: React.FC<Props> = ({ weatherState, departuresState, hi
               {/* Times */}
               <div style={{display:'flex',alignItems:'baseline',gap:'0.8rem',justifyContent:'flex-end'}}>
                 <span style={{
-                  fontSize:'clamp(0.9rem,2.2vh,1.8rem)',fontWeight:urgent?700:400,
+                  fontSize:`${rowFontVh}vh`,fontWeight:urgent?700:400,
                   color:timeColor,letterSpacing:'-0.01em',lineHeight:1,
                 }} className={urgent?'live-pulse':undefined}>{fmt(g.whens[0])}</span>
                 {g.whens.slice(1).map((w,j)=>(
-                  <span key={j} style={{fontSize:'clamp(0.65rem,1.4vh,1.1rem)',color:INK3,lineHeight:1}}>{fmt(w)}</span>
+                  <span key={j} style={{fontSize:`${nextFontVh}vh`,color:INK3,lineHeight:1}}>{fmt(w)}</span>
                 ))}
               </div>
             </div>

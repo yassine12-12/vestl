@@ -6,6 +6,22 @@ import { ClockRenderer } from './ClockRenderer';
 import { ThemeBackground } from './ThemeBackground';
 import { WeatherIcon } from './WeatherIcon';
 
+// Crossfading background layer — re-mounts (fade-in) whenever theme.id changes
+const BackgroundLayer: React.FC<{ theme: Theme }> = ({ theme }) => (
+  <>
+    <div
+      key={theme.id}
+      className="theme-bg-fade"
+      style={{
+        position: 'absolute', inset: 0, zIndex: 0,
+        background: theme.background,
+        backgroundImage: theme.backgroundImage,
+      }}
+    />
+    <ThemeBackground themeId={theme.id} />
+  </>
+);
+
 interface LayoutProps {
   children: React.ReactNode;
   theme: Theme;
@@ -173,8 +189,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, theme, weatherState, c
   const bg = {
     position: 'relative' as const,
     isolation: 'isolate' as const,
-    background: theme.background,
-    backgroundImage: theme.backgroundImage,
+    // background applied by BackgroundLayer (crossfades on theme change)
     fontFamily: theme.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
   };
 
@@ -238,7 +253,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, theme, weatherState, c
   if (customization.layout === 'split') {
     return (
       <div className="min-h-screen flex" style={bg}>
-        <ThemeBackground themeId={theme.id} />
+        <BackgroundLayer theme={theme} />
 
         {/* Left — Clock, date, weather */}
         <div
@@ -287,7 +302,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, theme, weatherState, c
   if (customization.layout === 'centered') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={bg}>
-        <ThemeBackground themeId={theme.id} />
+        <BackgroundLayer theme={theme} />
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', marginBottom: '2rem' }}>
           {renderClock()}
           {dateEl}
@@ -312,7 +327,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, theme, weatherState, c
   if (customization.layout === 'minimal') {
     return (
       <div className="min-h-screen flex items-center justify-center p-8" style={bg}>
-        <ThemeBackground themeId={theme.id} />
+        <BackgroundLayer theme={theme} />
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '72rem' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2.5rem' }}>
             <div>
@@ -335,7 +350,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, theme, weatherState, c
   if (customization.layout === 'compact') {
     return (
       <div className="min-h-screen flex flex-col p-4" style={bg}>
-        <ThemeBackground themeId={theme.id} />
+        <BackgroundLayer theme={theme} />
         <div
           style={{
             position: 'relative',
@@ -390,7 +405,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, theme, weatherState, c
           overflow: 'hidden',
         }}
       >
-        <ThemeBackground themeId={theme.id} />
+        <BackgroundLayer theme={theme} />
 
         {/* ── Left panel: ambient info ── */}
         <div

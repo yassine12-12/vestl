@@ -11,8 +11,10 @@ export interface Theme {
   fontFamily?: string;
   animation?: string;
   borderRadius?: string;
-  style?: 'modern' | 'minimal' | 'retro' | 'brutalist' | 'glass';
-  clockStyle?: 'digital' | 'analog-classic' | 'analog-modern' | 'analog-minimal' | 'analog-luxury';
+  style?: 'modern' | 'minimal' | 'retro' | 'brutalist' | 'glass' | 'luxury' | 'sport';
+  clockStyle?: 'digital' | 'analog-classic' | 'analog-modern' | 'analog-minimal' | 'analog-luxury'
+    | 'analog-bauhaus' | 'analog-skeleton' | 'analog-pilot' | 'analog-diver' | 'analog-grand-complication'
+    | 'analog-moonphase' | 'analog-racing' | 'analog-dress-elegant';
   layout?: 'default' | 'centered' | 'split' | 'minimal';
 }
 

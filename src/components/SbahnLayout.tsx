@@ -63,7 +63,7 @@ function buildGroups(deps: Departure[], hidden: string[]): GRow[] {
   groups.forEach(g => { const t = new Date(g.whens[0]).getTime(); if (!earliest.has(g.lineName) || t < earliest.get(g.lineName)!) earliest.set(g.lineName, t); });
   groups.sort((a, b) => { const la = earliest.get(a.lineName)!, lb = earliest.get(b.lineName)!; return la !== lb ? la - lb : new Date(a.whens[0]).getTime() - new Date(b.whens[0]).getTime(); });
   const cnt = new Map<string, number>(); const out: GRow[] = [];
-  for (const g of groups) { const c = cnt.get(g.lineName) ?? 0; if (c >= 2) continue; cnt.set(g.lineName, c + 1); out.push(g); if (out.length === 6) break; }
+  for (const g of groups) { const c = cnt.get(g.lineName) ?? 0; if (c >= 2) continue; cnt.set(g.lineName, c + 1); out.push(g); if (out.length === 8) break; }
   return out;
 }
 
@@ -135,6 +135,12 @@ export const SbahnLayout: React.FC<Props> = ({ weatherState, departuresState, hi
   const stopName = (departuresState.data?.departures ?? []).find(d => !hiddenModes.includes(d.line.mode))?.stop?.name ?? '';
   const isLoading = departuresState.status === 'idle' || departuresState.status === 'loading';
 
+  const numRows = Math.max(1, groups.length);
+  const headerVh = 14;
+  const rowHVh = (100 - headerVh) / numRows;
+  const rowFontVh = rowHVh * 0.82;
+  const nextFontVh = rowFontVh * 0.52;
+
   const timeStr = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', hour12: false });
 
   // S-Bahn BVG blue
@@ -156,27 +162,27 @@ export const SbahnLayout: React.FC<Props> = ({ weatherState, departuresState, hi
       <div style={{
         flexShrink: 0,
         display: 'flex', alignItems: 'center', gap: '2rem',
-        padding: '0.8rem 2.4rem',
+        padding: '1.8vh 2.4rem',
         borderBottom: `1px solid ${DIV}`,
         background: 'rgba(0,0,0,0.15)',
       }}>
         <span style={{
-          fontSize: 'clamp(2rem, 5vh, 4.2rem)', fontWeight: 200,
+          fontSize: '8vh', fontWeight: 200,
           color: WHITE, letterSpacing: '-0.04em', lineHeight: 1,
           fontVariantNumeric: 'tabular-nums',
         }}>{timeStr}</span>
 
         {weather && <>
-          <span style={{ fontSize: 'clamp(1.2rem, 3vh, 2.4rem)', fontWeight: 300, color: WHITE2, letterSpacing: '-0.02em', lineHeight: 1 }}>
+          <span style={{ fontSize: '6vh', fontWeight: 300, color: WHITE2, letterSpacing: '-0.02em', lineHeight: 1 }}>
             {Math.round(weather.main.temp)}°C
           </span>
-          <span style={{ fontSize: 'clamp(0.75rem, 1.6vh, 1.3rem)', fontWeight: 300, color: WHITE3, textTransform: 'capitalize', letterSpacing: '0.03em' }}>
+          <span style={{ fontSize: '4vh', fontWeight: 300, color: WHITE3, textTransform: 'capitalize', letterSpacing: '0.03em' }}>
             {weather.weather[0]?.description}
           </span>
         </>}
 
         {stopName && (
-          <span style={{ marginLeft: 'auto', fontSize: 'clamp(0.6rem, 1.2vh, 0.9rem)', fontWeight: 600, letterSpacing: '0.2em', color: WHITE3, textTransform: 'uppercase' }}>
+          <span style={{ marginLeft: 'auto', fontSize: '3.5vh', fontWeight: 600, letterSpacing: '0.2em', color: WHITE3, textTransform: 'uppercase' }}>
             {stopName}
           </span>
         )}
@@ -197,18 +203,18 @@ export const SbahnLayout: React.FC<Props> = ({ weatherState, departuresState, hi
 
           return (
             <div key={g.key} style={{
-              flex: 1, display: 'flex', alignItems: 'center',
+              height: `${rowHVh}vh`, display: 'flex', alignItems: 'center',
               padding: '0 2.4rem', gap: '1.6rem',
               borderBottom: isLast ? 'none' : `1px solid ${DIV}`,
               background: i % 2 === 0 ? 'rgba(0,0,0,0.10)' : 'transparent',
-              minHeight: 0,
+              overflow: 'hidden',
             }}>
               {/* Badge */}
               <LineBadge name={g.lineName} mode={g.lineMode} />
 
               {/* Direction */}
               <span style={{
-                flex: 1, fontSize: 'clamp(1.2rem, 3vh, 2.6rem)', fontWeight: 400,
+                flex: 1, fontSize: `${rowFontVh}vh`, fontWeight: 400,
                 color: WHITE, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 letterSpacing: '-0.01em', lineHeight: 1,
               }}>{g.direction}</span>
@@ -217,14 +223,14 @@ export const SbahnLayout: React.FC<Props> = ({ weatherState, departuresState, hi
               <div style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', flexShrink: 0 }}>
                 {g.whens.slice(1).map((w, j) => (
                   <span key={j} style={{
-                    fontSize: 'clamp(0.8rem, 1.8vh, 1.5rem)', fontWeight: 300,
+                    fontSize: `${nextFontVh}vh`, fontWeight: 300,
                     color: WHITE3, letterSpacing: '0', lineHeight: 1, whiteSpace: 'nowrap',
                   }}>{fmt(w)}</span>
                 ))}
 
                 {/* Primary time */}
                 <span style={{
-                  fontSize: 'clamp(1.4rem, 3.5vh, 3rem)',
+                  fontSize: `${rowFontVh}vh`,
                   fontWeight: urgent ? 700 : 400,
                   color: urgent ? '#ffe066' : WHITE,
                   letterSpacing: urgent ? '-0.03em' : '0',

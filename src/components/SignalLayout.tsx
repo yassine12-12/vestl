@@ -65,9 +65,12 @@ interface RowProps {
   dep: Departure;
   rowIndex: number;
   totalRows: number;
+  rowHVh: number;
+  rowFontVh: number;
+  nextFontVh: number;
 }
 
-const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
+const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows, rowHVh, rowFontVh, nextFontVh }) => {
   const { mins, label } = formatMins(dep.when);
   const urgent = mins <= 2;
   const soon = mins <= 5 && !urgent;
@@ -81,12 +84,11 @@ const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
   return (
     <div
       style={{
-        flex: 1,
+        height: `${rowHVh}vh`,
         display: 'flex',
         alignItems: 'center',
         borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.045)',
         background: rowBg,
-        minHeight: 0,
         overflow: 'hidden',
         position: 'relative',
       }}
@@ -110,12 +112,12 @@ const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
           backgroundColor: lc.bg,
           color: lc.fg,
           borderRadius: 7,
-          padding: '0 0.85rem',
-          height: '2.4rem',
-          minWidth: '4.2rem',
+          padding: `0 ${rowFontVh * 0.4}vh`,
+          height: `${rowFontVh * 1.4}vh`,
+          minWidth: `${rowFontVh * 3}vh`,
           marginLeft: '1.8rem',
           flexShrink: 0,
-          fontSize: 'clamp(0.82rem, 1.9vh, 1.15rem)',
+          fontSize: `${rowFontVh}vh`,
           fontWeight: 900,
           letterSpacing: '0.02em',
         }}
@@ -136,7 +138,7 @@ const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
       >
         <div
           style={{
-            fontSize: 'clamp(1.05rem, 2.6vh, 1.9rem)',
+            fontSize: `${rowFontVh}vh`,
             fontWeight: 300,
             color: 'rgba(255,255,255,0.9)',
             overflow: 'hidden',
@@ -152,7 +154,7 @@ const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
           {dep.stop?.name && (
             <span
               style={{
-                fontSize: '0.57rem',
+                fontSize: `${nextFontVh * 0.6}vh`,
                 fontWeight: 500,
                 color: 'rgba(255,255,255,0.22)',
                 letterSpacing: '0.14em',
@@ -165,7 +167,7 @@ const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
           {delay && (
             <span
               style={{
-                fontSize: '0.57rem',
+                fontSize: `${nextFontVh * 0.6}vh`,
                 fontWeight: 700,
                 color: '#f59e0b',
                 backgroundColor: 'rgba(245,158,11,0.14)',
@@ -188,14 +190,12 @@ const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
           alignItems: 'flex-end',
           padding: '0 2.8rem 0 1rem',
           flexShrink: 0,
-          minWidth: '8rem',
+          minWidth: `${rowFontVh * 4}vh`,
         }}
       >
         <span
           style={{
-            fontSize: mins === 0
-              ? 'clamp(1.5rem, 3.2vh, 2.6rem)'
-              : 'clamp(2rem, 5.2vh, 4.2rem)',
+            fontSize: `${rowFontVh}vh`,
             fontWeight: mins <= 5 ? 700 : 200,
             color: countdownColor,
             letterSpacing: mins === 0 ? '0.02em' : '-0.055em',
@@ -210,7 +210,7 @@ const SignalRow: React.FC<RowProps> = ({ dep, rowIndex, totalRows }) => {
         {mins > 0 && (
           <span
             style={{
-              fontSize: '0.52rem',
+              fontSize: `${nextFontVh * 0.6}vh`,
               fontWeight: 700,
               color: countdownColor,
               opacity: 0.45,
@@ -275,8 +275,14 @@ export const SignalLayout: React.FC<SignalLayoutProps> = ({
     ? departuresState.data.departures
         .filter(d => !hiddenModes.includes(d.line.mode))
         .sort((a, b) => new Date(a.when).getTime() - new Date(b.when).getTime())
-        .slice(0, 6)
+        .slice(0, 8)
     : [];
+
+  const numRows = Math.max(1, deps.length);
+  const headerVh = 20;
+  const rowHVh = (100 - headerVh) / numRows;
+  const rowFontVh = rowHVh * 0.82;
+  const nextFontVh = rowFontVh * 0.52;
 
   const timeStr = now.toLocaleTimeString('de-DE', {
     hour: '2-digit',
@@ -319,7 +325,7 @@ export const SignalLayout: React.FC<SignalLayoutProps> = ({
         {/* Time */}
         <div
           style={{
-            fontSize: 'clamp(3rem, 7.5vh, 6rem)',
+            fontSize: '8vh',
             fontWeight: 100,
             color: 'rgba(255,255,255,0.96)',
             letterSpacing: '-0.055em',
@@ -368,7 +374,7 @@ export const SignalLayout: React.FC<SignalLayoutProps> = ({
             <div>
               <div
                 style={{
-                  fontSize: 'clamp(1.5rem, 3vh, 2.2rem)',
+                  fontSize: '6vh',
                   fontWeight: 200,
                   color: 'rgba(255,255,255,0.9)',
                   letterSpacing: '-0.04em',
@@ -456,6 +462,9 @@ export const SignalLayout: React.FC<SignalLayoutProps> = ({
               dep={dep}
               rowIndex={i}
               totalRows={deps.length}
+              rowHVh={rowHVh}
+              rowFontVh={rowFontVh}
+              nextFontVh={nextFontVh}
             />
           ))
         )}

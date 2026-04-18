@@ -34,7 +34,7 @@ function buildGroups(deps:Departure[], hidden:string[]): GRow[] {
   groups.forEach(g=>{ const t=new Date(g.whens[0]).getTime(); if(!earliest.has(g.lineName)||t<earliest.get(g.lineName)!) earliest.set(g.lineName,t); });
   groups.sort((a,b)=>{ const la=earliest.get(a.lineName)!,lb=earliest.get(b.lineName)!; return la!==lb?la-lb:new Date(a.whens[0]).getTime()-new Date(b.whens[0]).getTime(); });
   const cnt=new Map<string,number>(); const out:GRow[]=[];
-  for(const g of groups){ const c=cnt.get(g.lineName)??0; if(c>=2)continue; cnt.set(g.lineName,c+1); out.push(g); if(out.length===6)break; }
+  for(const g of groups){ const c=cnt.get(g.lineName)??0; if(c>=2)continue; cnt.set(g.lineName,c+1); out.push(g); if(out.length===8)break; }
   return out;
 }
 
@@ -50,6 +50,12 @@ export const NovaLayout: React.FC<Props> = ({ weatherState, departuresState, hid
   const weather = weatherState.status==='success'?weatherState.data:null;
   const stopName = (departuresState.data?.departures??[]).find(d=>!hiddenModes.includes(d.line.mode))?.stop?.name??'';
   const isLoading = departuresState.status==='idle'||departuresState.status==='loading';
+
+  const numRows = Math.max(1, groups.length);
+  const headerVh = 14;
+  const rowHVh = (100 - headerVh) / numRows;
+  const rowFontVh = rowHVh * 0.82;
+  const nextFontVh = rowFontVh * 0.52;
 
   const timeStr = now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',hour12:false});
 
@@ -70,21 +76,21 @@ export const NovaLayout: React.FC<Props> = ({ weatherState, departuresState, hid
         borderBottom:'1px solid rgba(0,212,255,0.12)',
       }}>
         <span style={{
-          fontSize:'clamp(2.5rem,6vh,5rem)', fontWeight:100, color:'#00d4ff',
+          fontSize:'8vh', fontWeight:100, color:'#00d4ff',
           letterSpacing:'-0.04em', lineHeight:1, fontVariantNumeric:'tabular-nums',
         }}>{timeStr}</span>
 
         {weather && <>
-          <span style={{fontSize:'clamp(1rem,2.4vh,2rem)',fontWeight:300,color:'rgba(0,212,255,0.55)',letterSpacing:'-0.02em'}}>
+          <span style={{fontSize:'6vh',fontWeight:300,color:'rgba(0,212,255,0.55)',letterSpacing:'-0.02em'}}>
             {Math.round(weather.main.temp)}°
           </span>
-          <span style={{fontSize:'clamp(0.75rem,1.6vh,1.3rem)',fontWeight:300,color:'rgba(255,255,255,0.22)',letterSpacing:'0.04em'}}>
+          <span style={{fontSize:'4vh',fontWeight:300,color:'rgba(255,255,255,0.22)',letterSpacing:'0.04em'}}>
             {weather.weather[0]?.description}
           </span>
         </>}
 
         {stopName && <span style={{
-          marginLeft:'auto',fontSize:'clamp(0.6rem,1.2vh,0.9rem)',fontWeight:600,
+          marginLeft:'auto',fontSize:'3.5vh',fontWeight:600,
           letterSpacing:'0.22em',color:'rgba(255,255,255,0.18)',textTransform:'uppercase',
         }}>{stopName}</span>}
       </div>
@@ -104,23 +110,23 @@ export const NovaLayout: React.FC<Props> = ({ weatherState, departuresState, hid
 
           return (
             <div key={g.key} style={{
-              flex:1, display:'flex', alignItems:'center',
-              padding:'0 2.5rem', gap:'1.6rem', minHeight:0,
+              height:`${rowHVh}vh`, display:'flex', alignItems:'center',
+              padding:'0 2.5rem', gap:'1.6rem', overflow:'hidden',
               borderBottom: i<groups.length-1?'1px solid rgba(255,255,255,0.04)':'none',
             }}>
               {/* Line badge */}
               <div style={{
                 display:'flex',alignItems:'center',justifyContent:'center',
-                minWidth:'4rem', height:'2rem', borderRadius:6,
+                minWidth:`${rowFontVh * 3}vh`, height:`${rowFontVh * 1.4}vh`, borderRadius:6,
                 background:bg, flexShrink:0,
-                fontSize:'clamp(0.85rem,2vh,1.1rem)', fontWeight:800, color:'#fff',
+                fontSize:`${rowFontVh}vh`, fontWeight:800, color:'#fff',
                 letterSpacing:'0.02em',
                 boxShadow:`0 0 12px ${bg}60`,
               }}>{g.lineName}</div>
 
               {/* Direction */}
               <span style={{
-                flex:1, fontSize:'clamp(1rem,2.6vh,2.1rem)', fontWeight:300,
+                flex:1, fontSize:`${rowFontVh}vh`, fontWeight:300,
                 color:'rgba(255,255,255,0.88)', overflow:'hidden',
                 textOverflow:'ellipsis', whiteSpace:'nowrap',
                 letterSpacing:'-0.01em', lineHeight:1,
@@ -130,16 +136,16 @@ export const NovaLayout: React.FC<Props> = ({ weatherState, departuresState, hid
               <div style={{display:'flex',alignItems:'baseline',gap:'1rem',flexShrink:0}}>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end'}}>
                   <span style={{
-                    fontSize: mins===0?'clamp(1.2rem,3vh,2.4rem)':'clamp(1.6rem,4vh,3.2rem)',
+                    fontSize:`${rowFontVh}vh`,
                     fontWeight: urgent?700:200,
                     color:timeColor, letterSpacing:'-0.04em', lineHeight:1,
                     textShadow: urgent?`0 0 16px ${timeColor}90`:'none',
                   }} className={urgent?'live-pulse':undefined}>{fmt(g.whens[0])}</span>
-                  {mins>0 && <span style={{fontSize:'0.55rem',fontWeight:600,color:timeColor,opacity:0.5,letterSpacing:'0.18em'}}>MIN</span>}
+                  {mins>0 && <span style={{fontSize:`${nextFontVh * 0.6}vh`,fontWeight:600,color:timeColor,opacity:0.5,letterSpacing:'0.18em'}}>MIN</span>}
                 </div>
                 {g.whens.slice(1).map((w,j)=>(
                   <span key={j} style={{
-                    fontSize:'clamp(0.85rem,2vh,1.5rem)',fontWeight:300,
+                    fontSize:`${nextFontVh}vh`,fontWeight:300,
                     color:'rgba(255,255,255,0.25)',letterSpacing:'-0.02em',lineHeight:1,
                   }}>{fmt(w)}</span>
                 ))}
