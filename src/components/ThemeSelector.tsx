@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { themes, Theme } from '../themes';
+import { Theme } from '../themes';
 import { berlinThemes } from '../themes/berlinThemes';
 import { vestlThemes } from '../themes/vestlThemes';
-import { officialTransitThemes } from '../themes/officialTransitThemes';
 import { ThemeCustomization, DataState, DeparturesData } from '../types';
 import { UserConfig } from '../userConfig';
 import { MiniMap } from './MiniMap';
@@ -149,10 +148,6 @@ const ThemeRow: React.FC<{ theme: Theme; active: boolean; onClick: () => void }>
 
 // ─── THEME TAB ───────────────────────────────────────────────────────────────
 
-const BERLIN_IDS   = berlinThemes.map(t => t.id);
-const VESTL_IDS    = vestlThemes.map(t => t.id);
-const OFFICIAL_IDS = officialTransitThemes.map(t => t.id);
-
 const ThemeTab: React.FC<{
   currentTheme: Theme;
   onThemeChange: (t: Theme) => void;
@@ -164,12 +159,8 @@ const ThemeTab: React.FC<{
   const setLayout = (value: string) =>
     onCustomizationChange({ ...customization, layout: value as ThemeCustomization['layout'] });
 
-  const vestlList    = vestlThemes as Theme[];
-  const berlinList   = berlinThemes as Theme[];
-  const officialList = officialTransitThemes as Theme[];
-  const moreList     = themes.filter(
-    t => !BERLIN_IDS.includes(t.id) && !VESTL_IDS.includes(t.id) && !OFFICIAL_IDS.includes(t.id)
-  );
+  const vestlList  = vestlThemes as Theme[];
+  const berlinList = berlinThemes as Theme[];
 
   const ThemeSection = ({ label, list }: { label: string; list: Theme[] }) => (
     <div className="mb-5">
@@ -216,10 +207,8 @@ const ThemeTab: React.FC<{
         <div className="flex-1 h-px" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
       </div>
 
-      <ThemeSection label="VESTL"            list={vestlList} />
-      <ThemeSection label="Berlin"           list={berlinList} />
-      <ThemeSection label="BVG & DB"         list={officialList} />
-      <ThemeSection label="More"             list={moreList} />
+      <ThemeSection label="VESTL"  list={vestlList} />
+      <ThemeSection label="Berlin" list={berlinList} />
     </div>
   );
 };
