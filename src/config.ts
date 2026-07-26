@@ -4,7 +4,7 @@
 export const config = {
   // Your address for display
   MY_ADDRESS: 'Alexanderplatz, Berlin 10178',
-  
+
   // Your location coordinates
   MY_LAT: 52.5219,
   MY_LON: 13.4132,

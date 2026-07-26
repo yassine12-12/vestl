@@ -33,7 +33,7 @@ const MODES: ModeConfig[] = [
 ];
 
 function shortAddress(displayName: string): string {
-  // Turn "34, Alexanderplatz, Mitte, Berlin, 10115, Germany" into "Alexanderplatz, Berlin"
+  // Turn "1, Alexanderplatz, Mitte, Berlin, 10178, Germany" into "Alexanderplatz 1, Berlin"
   const parts = displayName.split(', ');
   const road = parts.find(p => /[a-zäöüß]/i.test(p) && !/^\d+$/.test(p) && p !== 'Germany' && p !== 'Deutschland');
   const number = parts[0].match(/^\d+$/) ? parts[0] : '';
