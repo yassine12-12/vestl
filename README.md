@@ -26,6 +26,16 @@ VESTL runs on a **Raspberry Pi** (3B+ or newer) connected to a **3:1 ultra-wide 
 
 The **3:1 aspect ratio** is a deliberate product decision: the display is purpose-shaped for a door context. It is wide enough to show multiple transit lines side by side, and narrow enough to sit flush against a wall like a shelf or a picture frame.
 
+<img src="docs/photos/concept-door-mounted.png" alt="Concept render — VESTL mounted above a doorframe" width="600">
+
+*AI-generated concept render, not a photo of a built unit — illustrates the intended mounted scale and placement.*
+
+<details>
+<summary>Color theme exploration (concept renders)</summary>
+<br>
+<img src="docs/photos/concept-color-themes-1.png" alt="Concept render — board color theme options" width="600">
+</details>
+
 ### Housing
 
 The enclosure is a core part of the product — not an afterthought. Every edition of VESTL has a housing designed to match its identity:
