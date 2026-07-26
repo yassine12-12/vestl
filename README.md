@@ -8,6 +8,10 @@ This repository contains the **display software** that runs on the VESTL device.
 
 ![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-blue) ![Vite](https://img.shields.io/badge/Vite-5-646CFF) ![Raspberry Pi](https://img.shields.io/badge/Runs%20on-Raspberry%20Pi-c51a4a) ![No API Key](https://img.shields.io/badge/API%20Key-none%20required-success)
 
+![VESTL concept render — AI-generated companion device concept in three finishes](docs/demo-concept.gif)
+
+*AI-generated concept exploration, not a real product — illustrative only.*
+
 ![VESTL demo — cycling through board skins with live BVG departures](docs/demo.gif)
 
 *Live capture, not a mockup — same board skins available in Settings → Theme.*
