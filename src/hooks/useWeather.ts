@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { config } from '../config';
 import { DataState, WeatherData } from '../types';
 
@@ -8,6 +8,8 @@ export const useWeather = (lat: number, lon: number) => {
     status: 'idle',
     error: null,
   });
+
+  const lastData = useRef<WeatherData | null>(null);
 
   const fetchWeather = async () => {
     setWeatherState(prev => ({ ...prev, status: 'loading' }));
@@ -45,6 +47,7 @@ export const useWeather = (lat: number, lon: number) => {
         name: config.MY_ADDRESS.split(',')[0] || 'Location',
       };
       
+      lastData.current = data;
       setWeatherState({
         data,
         status: 'success',
@@ -52,14 +55,15 @@ export const useWeather = (lat: number, lon: number) => {
       });
     } catch (error) {
       setWeatherState({
-        data: null,
-        status: 'error',
+        data: lastData.current,
+        status: lastData.current ? 'success' : 'error',
         error: error instanceof Error ? error.message : 'Failed to fetch weather data',
       });
     }
   };
 
   useEffect(() => {
+    lastData.current = null; // reset stale data when location changes
     fetchWeather();
     const interval = setInterval(fetchWeather, config.REFRESH_INTERVAL);
     return () => clearInterval(interval);

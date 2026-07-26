@@ -6,7 +6,19 @@ VESTL is a physical product — a Raspberry Pi + screen unit designed to be moun
 
 This repository contains the **display software** that runs on the VESTL device.
 
-![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-blue) ![Raspberry Pi](https://img.shields.io/badge/Runs%20on-Raspberry%20Pi-c51a4a)
+![React](https://img.shields.io/badge/React-18-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-blue) ![Vite](https://img.shields.io/badge/Vite-5-646CFF) ![Raspberry Pi](https://img.shields.io/badge/Runs%20on-Raspberry%20Pi-c51a4a) ![No API Key](https://img.shields.io/badge/API%20Key-none%20required-success)
+
+![VESTL demo — cycling through board skins with live BVG departures](docs/demo.gif)
+
+*Live capture, not a mockup — same board skins available in Settings → Theme.*
+
+<table>
+<tr>
+<td><img src="docs/screenshots/board-bvg-amber.png" alt="BVG amber split-flap board skin" width="280"></td>
+<td><img src="docs/screenshots/board-bvg-icons.png" alt="Official line-badge icons board skin" width="280"></td>
+<td><img src="docs/screenshots/board-paper.png" alt="Light paper-ticket board skin" width="280"></td>
+</tr>
+</table>
 
 ## The Hardware
 
@@ -32,108 +44,75 @@ The prototype housing is intentionally simple — clean rectangular form, flush-
 ## ✨ Software Features
 
 **Core — transit is everything:**
-- 🚇 **Live Transit Departures** — next U-Bahn / S-Bahn / Tram / Bus from the nearest stop, auto-detected by GPS. This is the product. Everything else supports it.
-- 🔄 **Auto-refresh** — updates every 60 seconds, fully passive, no interaction ever needed
-- ⚡ **No backend, no API keys** — works out of the box, all data from public open APIs
+- 🚇 **Live Transit Departures** — next U-Bahn / S-Bahn / Tram / Bus from the nearest stop(s), auto-detected by GPS. This is the product. Everything else supports it.
+- 🚏 **Distance-first stop selection** — picks the closest stop for each high-quality mode (subway, suburban, tram) so a nearby U-Bahn and S-Bahn can appear side by side, instead of one bus stop crowding out a better station further away. Falls back to bus stops only when nothing better is nearby.
+- 🪧 **Real departure board designs** — multiple board skins modeled on actual transit displays: BVG amber/yellow split-flap, official line-badge icons, S-Bahn, metro, signal, paper ticket, and more.
+- 🔄 **Auto-refresh** — updates every 60 seconds, fully passive, no interaction ever needed. Briefly holds the last known departures/weather on a failed fetch instead of going blank.
+- ⚡ **No backend, no API keys** — works out of the box, all data from public open APIs.
 
 **Supporting context:**
-- 🌡️ **Weather** — temperature and condition at a glance (secondary, complements the transit info)
-- 🕐 **Clock** — time display with 30+ styles from Bauhaus to Tourbillon (tertiary, ambient)
-- 🎨 **Berlin Themes** — full-screen SVG landmark illustrations as backgrounds (U-Bahn platform, Fernsehturm, Berliner Dom, Berghain, East Side Gallery and more)
+- 📍 **GPS auto-locate + interactive map** — set your location by GPS, dragging a pin on an in-app map, or searching an address (with live suggestions), all from the Settings panel.
+- 🌡️ **Weather** — temperature and condition at a glance via Open-Meteo (secondary, complements the transit info).
+- 🕐 **Clock** — time display with 25+ styles, from Bauhaus to Tourbillon to Kintsugi (tertiary, ambient).
+- 🎨 **Themes** — dozens of themes across Berlin landmark illustrations (U-Bahn platform, Fernsehturm, Berliner Dom, Berghain, East Side Gallery), official transit styling, and more.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 16+ and npm
-- OpenWeatherMap API key (free tier available)
+- Nothing else — no API keys, no accounts.
 
 ### Installation
 
-1. **Clone or navigate to the project folder**
-   ```powershell
-   cd "c:\Users\kraie\Documents\Door info DASH"
-   ```
+```bash
+git clone https://github.com/yassine12-12/vestl.git
+cd vestl
+npm install
+npm run dev
+```
 
-2. **Install dependencies**
-   ```powershell
-   npm install
-   ```
+Open `http://localhost:5173` in your browser.
 
-3. **Configure your settings**
-   
-   Copy `.env.example` to `.env` and add your API key:
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-   
-   Edit `.env` and add your OpenWeatherMap API key:
-   ```
-   VITE_OPENWEATHER_API_KEY=your_actual_api_key_here
-   ```
+### Set your location
 
-4. **Set your location and transit stop**
-   
-   Edit `src/config.ts`:
-   ```typescript
-   export const config = {
-     MY_LAT: 52.5200,  // Your latitude
-     MY_LON: 13.4050,  // Your longitude
-     OPENWEATHER_API_KEY: import.meta.env.VITE_OPENWEATHER_API_KEY,
-     STOP_ID: '900000100003',  // Your BVG/VBB stop ID
-     REFRESH_INTERVAL: 60000,
-   };
-   ```
+Location can be set entirely from the app's Settings panel (GPS, map, or address search) and is saved to `localStorage` — no code changes needed.
 
-5. **Start the development server**
-   ```powershell
-   npm run dev
-   ```
+To change the *default* starting location instead, edit `src/config.ts`:
 
-6. **Open in browser**
-   
-   Navigate to `http://localhost:5173`
-
-## 🔑 Getting API Keys
-
-### OpenWeatherMap API Key
-
-1. Go to [OpenWeatherMap](https://openweathermap.org/api)
-2. Sign up for a free account
-3. Navigate to API Keys section
-4. Copy your API key
-5. Add it to your `.env` file
-
-### Finding Your Transit Stop ID
-
-1. Go to [transport.rest API](https://v6.transport.rest/)
-2. Use the stops/nearby endpoint:
-   ```
-   https://v6.transport.rest/stops/nearby?latitude=52.52&longitude=13.40
-   ```
-3. Replace with your coordinates
-4. Find your stop in the results and copy its ID
-5. Add it to `src/config.ts`
+```typescript
+export const config = {
+  MY_ADDRESS: 'Alexanderplatz, Berlin 10178',
+  MY_LAT: 52.5219,
+  MY_LON: 13.4132,
+  SEARCH_RADIUS: 300,       // meters, for display only
+  REFRESH_INTERVAL: 60000,  // ms
+};
+```
 
 ## 📦 Project Structure
 
 ```
-Door info DASH/
+vestl/
 ├── src/
-│   ├── components/
-│   │   ├── Layout.tsx           # Main layout wrapper
-│   │   ├── TemperatureCard.tsx  # Weather display
-│   │   └── DeparturesCard.tsx   # Transit departures
+│   ├── App.tsx                  # Root component — wires hooks, theme/board state, modals
+│   ├── config.ts                # Default location + refresh interval
+│   ├── userConfig.ts            # Runtime location/settings persisted to localStorage
+│   ├── types.ts                 # Shared TypeScript types
 │   ├── hooks/
-│   │   ├── useWeather.ts        # Weather data fetching
-│   │   └── useDepartures.ts     # Transit data fetching
-│   ├── config.ts                # Your configuration
-│   ├── types.ts                 # TypeScript definitions
-│   ├── App.tsx                  # Main app component
-│   ├── main.tsx                 # Entry point
-│   └── index.css                # Tailwind + custom styles
-├── .env                         # Environment variables (not in git)
-├── .env.example                 # Environment template
+│   │   ├── useWeather.ts        # Open-Meteo fetch, no key needed
+│   │   └── useDepartures.ts     # BVG/VBB nearby-stop lookup + departures fetch
+│   ├── components/
+│   │   ├── BvgLayout.tsx        # Unified departure board — all skins/variants
+│   │   ├── Layout.tsx           # Layout shell (clock, weather, board placement)
+│   │   ├── MetroLayout.tsx, NovaLayout.tsx, PaperLayout.tsx,
+│   │   │   SbahnLayout.tsx, SignalLayout.tsx, VestlBoard.tsx
+│   │   ├── MiniMap.tsx          # Leaflet map for location picking
+│   │   ├── SettingsModal.tsx    # Theme + Location settings panel
+│   │   ├── CustomizationModal.tsx, ThemeSelector.tsx
+│   │   ├── ThemeBackground.tsx  # Full-screen SVG landmark illustrations
+│   │   └── clocks/              # 25+ individual clock face components
+│   └── themes/                  # Theme definitions, grouped by collection
 ├── package.json
 ├── tailwind.config.js
 ├── tsconfig.json
@@ -142,83 +121,65 @@ Door info DASH/
 
 ## 🎨 Customization
 
-### Change Refresh Interval
+Most customization (theme, board style, clock face, location) is done live in the app via the Settings and Customize panels — changes persist to `localStorage`.
+
+### Change refresh interval
 
 Edit `src/config.ts`:
 ```typescript
 REFRESH_INTERVAL: 30000,  // 30 seconds
 ```
 
-### Modify Number of Departures
+### Adding a new clock face or theme
 
-The API call in `src/hooks/useDepartures.ts`:
-```typescript
-const url = `https://v6.transport.rest/stops/${config.STOP_ID}/departures?results=10&duration=30`;
+See `AGENT_MEMORY.md` for the registration checklist — new clocks and themes must be wired into a handful of specific files to show up in the picker.
+
+### Regenerating the demo GIF
+
+`scripts/generate-demo.mjs` drives the running dev server with [Playwright](https://playwright.dev/) (a devDependency, only used for this), cycling through board skins via `localStorage` and screenshotting each — real live data, not a mockup:
+
+```bash
+npm run dev                     # in one terminal
+node scripts/generate-demo.mjs  # in another — writes docs/frames/*.png
+ffmpeg -y -framerate 1/1.4 -pattern_type glob -i 'docs/frames/frame-*.png' \
+  -vf "scale=900:-1:flags=lanczos,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer" \
+  -loop 0 docs/demo.gif
 ```
-
-### Styling
-
-All styles use Tailwind CSS. Main theme colors are in `tailwind.config.js`:
-- `midnight` - Dark navy background
-- `midnight-light` - Lighter navy
-- Custom glass effects in `src/index.css`
 
 ## 🏗️ Building for Production
 
-```powershell
-npm run build
+```bash
+npm run build    # type-checks then builds to dist/
+npm run preview  # serve the production build locally
 ```
 
-The built files will be in the `dist/` folder. You can serve them with any static file server.
+## 🖥️ Deployment
 
-To preview the production build:
-```powershell
-npm run preview
-```
+### Raspberry Pi kiosk (intended use)
+Build with `npm run build`, serve `dist/` with any static file server, and point Chromium at it in kiosk mode (`chromium-browser --kiosk --incognito <url>`) via a systemd service or autostart entry.
 
-## 🖥️ Deployment Options
-
-### Vercel (Recommended)
-1. Push to GitHub
-2. Import project in Vercel
-3. Add environment variables
-4. Deploy!
-
-### Netlify
-1. Drag & drop `dist/` folder
-2. Or connect GitHub repo
-3. Set environment variables
-4. Deploy!
-
-### Local Kiosk Mode
-Run in fullscreen browser (F11) for a dedicated display panel.
+### Vercel / Netlify
+Standard static-site deploy — build command `npm run build`, output directory `dist/`. No environment variables required.
 
 ## 🛠️ Troubleshooting
 
-**Weather not loading?**
-- Check your API key in `.env`
-- Verify coordinates in `config.ts`
-- Check browser console for errors
-
 **No departures showing?**
-- Verify your STOP_ID is correct
-- Check if the stop has upcoming departures
-- Try the API URL directly in browser
+- Check that your location (Settings → Location) actually has a transit stop within the search radius.
+- Try the BVG API directly in your browser: `https://v6.bvg.transport.rest/locations/nearby?latitude=<lat>&longitude=<lon>`.
+
+**Weather not loading?**
+- Check the browser console — `useWeather` falls back to the last successful reading, so a brief outage won't blank the card, but a persistent failure will show an error state.
 
 **CORS errors?**
-- Both APIs support direct browser requests
-- If issues persist, check API documentation
+- Both `open-meteo.com` and `v6.bvg.transport.rest` support direct browser requests; this shouldn't happen. If it does, check the relevant API's status page.
 
 ## 📄 License
 
-MIT License - feel free to use and modify!
+MIT License — feel free to use and modify.
 
 ## 🙏 Credits
 
-- Weather data: [OpenWeatherMap](https://openweathermap.org/)
-- Transit data: [transport.rest](https://transport.rest/)
+- Weather data: [Open-Meteo](https://open-meteo.com/)
+- Transit data: [BVG/VBB via transport.rest](https://v6.bvg.transport.rest/)
+- Map: [Leaflet](https://leafletjs.com/) + [OpenStreetMap](https://www.openstreetmap.org/)
 - Built with React, TypeScript, Vite, and Tailwind CSS
-
----
-
-**Enjoy your dashboard! 🎉**

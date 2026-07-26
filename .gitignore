@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.local
 .env.production
+
+# Intermediate frames from scripts/generate-demo.mjs (docs/demo.gif is committed)
+docs/frames
